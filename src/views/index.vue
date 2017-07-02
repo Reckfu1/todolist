@@ -5,10 +5,13 @@
         </div>
         <div class="wrapper">
             <div class="head">
+                <span class="all" v-show="getSumItem" @click="changeStatus"></span>
                 <input type="text" placeholder="What needs to be done?" class="new-things" @keyup.enter="addItemToList" v-model="message">
-                <div class="list" v-for="item in getAllItem" v-show="getAllItem" @mouseenter="toggleShowBtn" @mouseleave="toggleShowBtn">
-                    <input type="text" class="item" :value="item.text">
-                    <span :class="{deleteBtn:deleteBtn}" @click="delItem(getAllItem,item)"></span>
+                <div class="list" v-for="item in getAllItem" v-show="getAllItem">
+                    <input type="text" class="item" :value="item.text" :class="{itemOk:itemOk}">
+                    <span class="deleteBtn" @click="delItem(getAllItem,item)"></span>
+                    <span class="circleBtn" :class="{greenBtn:greenBtn}"></span>
+                    <span class="completedBtn" :class="{hide:hide}" @click="changeStatus"></span>
                 </div>
                 <div class="footer" v-show="getSumItem">
                     <span>{{getSumItem}} items left</span>
@@ -34,21 +37,30 @@ export default {
     data() {
         return {
             message:'',
-            deleteBtn:false
+            greenBtn:false,
+            hide:true,
+            itmeOk:false
+            // deleteBtn:false
         };
     },
 
     methods:{
         addItemToList(){
-            this.$store.dispatch('addItem',this.message)
+            if(this.message) this.$store.dispatch('addItem',this.message)
             this.message=''
         },
-        toggleShowBtn(e){
-            this.deleteBtn=!this.deleteBtn
-        },
+        // toggleShowBtn(event,item){
+        //     console.log(event.target.value," and ", item.text)
+        //     if(event.target.value==item.text) this.deleteBtn=!this.deleteBtn
+        // },
         delItem(allitems,curitem){
             this.$store.dispatch('toggleActiveItem',curitem)
             this.$store.dispatch('deleteItem',allitems)
+        },
+        changeStatus(){
+            this.hide=!this.hide
+            this.greenBtn=!this.greenBtn
+            this.itemOk=!this.itemOk
         }
     },
 
@@ -86,6 +98,15 @@ li {
     text-align: center;
     box-shadow: 1px 1px 10px rgba(0,0,0,.1);
     position: relative;
+}
+.all{
+    display: inline-block;
+    height: 16px;
+    width:16px;
+    background:url('../assets/down16.png') no-repeat;
+    position: absolute;
+    top:24px;
+    left:15px;
 }
 
 /*.head:after{
@@ -164,6 +185,45 @@ li {
     opacity: .7;
 }
 
+.circleBtn{
+    display: inline-block;
+    height: 32px;
+    width:32px;
+    background:url('../assets/circle.png') no-repeat;
+    position: absolute;
+    opacity: .3;
+    top:0;
+    left:5px;
+    bottom:0;
+    margin:auto;
+}
+.greenBtn{
+    display: inline-block;
+    height: 32px;
+    width:32px;
+    background:url('../assets/green.png') no-repeat;
+    position: absolute;
+    opacity: .3;
+    top:0;
+    left:5px;
+    bottom:0;
+    margin:auto;
+}
+.completedBtn{
+    display: inline-block;
+    height: 16px;
+    width:16px;
+    background:url('../assets/yes16.png') no-repeat;
+    position: absolute;
+    top:0;
+    left:13px;
+    bottom:0;
+    margin:auto;
+}
+.hide{
+    opacity: 0;
+}
+
 .item{
     height: 60px;
     width: 600px;
@@ -174,6 +234,10 @@ li {
     outline: none;
     border-bottom:1px solid rgba(7,17,27,.15);
     opacity: .6;
+}
+.itemOk{
+    text-decoration: line-through;
+    opacity: .2;
 }
 .footer{
     height: 45px;
