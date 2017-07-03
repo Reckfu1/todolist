@@ -11,7 +11,9 @@ const mutations={
             text:content,
             completed:false,
             active:true,
-            id:+new Date()
+            id:+new Date(),
+            selected:false,
+            clicked:false
         }
         state.todolist.push(data)
     },
@@ -26,6 +28,14 @@ const mutations={
     [types.ACTIVE_ITEM](state,item){
         state.activeitem=item
     }
+    // [types.TOGGLE_SELETED_STATUS](state,item){
+    //     for(let i=0;i<state.todolist.length;i++){
+    //         if(item.id==state.todolist[i].id){
+    //             state.todolist[i].selected=!state.todolist[i].selected
+    //             break
+    //         }
+    //     }
+    // }
 }
 
 const actions={
@@ -38,6 +48,9 @@ const actions={
     toggleActiveItem({commit},item){
         commit(types.ACTIVE_ITEM,item)
     }
+    // toggleSeletedStatus({commit},item){
+    //     commit(types.TOGGLE_SELETED_STATUS,item)
+    // }
 }
 
 const getters={

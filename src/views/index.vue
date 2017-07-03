@@ -5,17 +5,17 @@
         </div>
         <div class="wrapper">
             <div class="head">
-                <span class="all" v-show="getSumItem" @click="changeStatus"></span>
+                <span class="all" v-show="getSumItem" @click="changeStatus(getAllItem)"></span>
                 <input type="text" placeholder="What needs to be done?" class="new-things" @keyup.enter="addItemToList" v-model="message">
-                <div class="list" v-for="item in getAllItem" v-show="getAllItem">
-                    <input type="text" class="item" :value="item.text" :class="{itemOk:itemOk}">
-                    <span class="deleteBtn" @click="delItem(getAllItem,item)"></span>
-                    <span class="circleBtn" :class="{greenBtn:greenBtn}"></span>
-                    <span class="completedBtn" :class="{hide:hide}" @click="changeStatus"></span>
+                <div class="list" v-for="item in getAllItem" v-show="getAllItem" @mouseenter="toggleShowBtn(item)" @mouseleave="toggleShowBtn(item)">
+                    <input type="text" class="item" :value="item.text" :class="[item.clicked?'itemOk':'']">
+                    <span :class="[item.selected ? 'deleteBtn':'']" @click="delItem(getAllItem,item)"></span>
+                    <span class="circleBtn" :class="[item.clicked?'greenBtn':'']"></span>
+                    <span class="completedBtn" :class="[item.clicked?'':'hide']" @click="chooseItem(item)"></span>
                 </div>
                 <div class="footer" v-show="getSumItem">
                     <span>{{getSumItem}} items left</span>
-                    <span class="line">Clear completed</span>
+                    <span class="line" @click="clearItem(getAllItem)">Clear completed</span>
                     <div class="toggle-list">
                         <div>All</div>
                         <div>Active</div>
@@ -36,11 +36,7 @@ export default {
 
     data() {
         return {
-            message:'',
-            greenBtn:false,
-            hide:true,
-            itmeOk:false
-            // deleteBtn:false
+            message:''
         };
     },
 
@@ -49,25 +45,42 @@ export default {
             if(this.message) this.$store.dispatch('addItem',this.message)
             this.message=''
         },
-        // toggleShowBtn(event,item){
-        //     console.log(event.target.value," and ", item.text)
-        //     if(event.target.value==item.text) this.deleteBtn=!this.deleteBtn
-        // },
-        delItem(allitems,curitem){
-            this.$store.dispatch('toggleActiveItem',curitem)
-            this.$store.dispatch('deleteItem',allitems)
+        toggleShowBtn(item){
+            // this.$store.dispatch('toggleSeletedStatus',item)
+            item.selected=!item.selected
         },
-        changeStatus(){
-            this.hide=!this.hide
-            this.greenBtn=!this.greenBtn
-            this.itemOk=!this.itemOk
+        chooseItem(item){
+            item.clicked=!item.clicked
+        },
+        delItem(items,curitem){
+            this.$store.dispatch('toggleActiveItem',curitem)
+            this.$store.dispatch('deleteItem',items)
+        },
+        clearItem(items){
+            let arr=[],t=0
+            for(let i=0;i<items.length;i++){
+                if(items[i].clicked){
+                    arr[t++]=items[i]
+                }
+            }
+            
+            for(let i=0;i<arr.length;i++){
+                this.$store.dispatch('toggleActiveItem',arr[i])
+                this.$store.dispatch('deleteItem',items)               
+            }
+        },
+        changeStatus(items){
+            for(let i=0;i<items.length;i++){
+                items[i].clicked=!items[i].clicked
+            }
         }
     },
 
     computed:{
         ...mapGetters([
             'getAllItem',
-            'getSumItem'
+            'getSumItem',
+            'getCurrentItem'
         ])
     }
 };
@@ -223,7 +236,6 @@ li {
 .hide{
     opacity: 0;
 }
-
 .item{
     height: 60px;
     width: 600px;
