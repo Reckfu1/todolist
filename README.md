@@ -1,6 +1,6 @@
 # todolist
 
-> A Vue.js project
+> 作为练习
 
 ## Build Setup
 

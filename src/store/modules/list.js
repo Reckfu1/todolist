@@ -56,7 +56,17 @@ const actions={
 const getters={
     getAllItem:state => state.todolist,
     getSumItem:state => state.todolist.length,
-    getCurrentItem:state => state.activeitem
+    getCurrentItem:state => state.activeitem,
+    activeItems(state){
+        return state.todolist.filter((todo) => {
+            return !todo.completed
+        })
+    },
+    completedItems(state){
+        return state.todolist.filter((todo) => {
+            return todo.completed
+        })
+    }
 }
 
 export default{

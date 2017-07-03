@@ -7,7 +7,7 @@
             <div class="head">
                 <span class="all" v-show="getSumItem" @click="changeStatus(getAllItem)"></span>
                 <input type="text" placeholder="What needs to be done?" class="new-things" @keyup.enter="addItemToList" v-model="message">
-                <div class="list" v-for="item in getAllItem" v-show="getAllItem" @mouseenter="toggleShowBtn(item)" @mouseleave="toggleShowBtn(item)">
+                <div class="list" v-for="item in filterItems" v-show="getAllItem" @mouseenter="toggleShowBtn(item)" @mouseleave="toggleShowBtn(item)">
                     <input type="text" class="item" :value="item.text" :class="[item.clicked?'itemOk':'']">
                     <span :class="[item.selected ? 'deleteBtn':'']" @click="delItem(getAllItem,item)"></span>
                     <span class="circleBtn" :class="[item.clicked?'greenBtn':'']"></span>
@@ -17,9 +17,9 @@
                     <span>{{getSumItem}} items left</span>
                     <span class="line" @click="clearItem(getAllItem)">Clear completed</span>
                     <div class="toggle-list">
-                        <div>All</div>
-                        <div>Active</div>
-                        <div>Completed</div>
+                        <div @click="showAllItems">All</div>
+                        <div @click="showActiveItems">Active</div>
+                        <div @click="showCompletedItems">Completed</div>
                     </div>
                 </div>
                 <div class="mask" v-show="getSumItem"></div>
@@ -36,7 +36,8 @@ export default {
 
     data() {
         return {
-            message:''
+            message:'',
+            filterItems:[]
         };
     },
 
@@ -44,13 +45,14 @@ export default {
         addItemToList(){
             if(this.message) this.$store.dispatch('addItem',this.message)
             this.message=''
+            this.filterItems=this.getAllItem
         },
         toggleShowBtn(item){
-            // this.$store.dispatch('toggleSeletedStatus',item)
             item.selected=!item.selected
         },
         chooseItem(item){
             item.clicked=!item.clicked
+            item.completed=!item.completed
         },
         delItem(items,curitem){
             this.$store.dispatch('toggleActiveItem',curitem)
@@ -73,6 +75,15 @@ export default {
             for(let i=0;i<items.length;i++){
                 items[i].clicked=!items[i].clicked
             }
+        },
+        showCompletedItems(){
+            this.filterItems=this.completedItems
+        },
+        showActiveItems(){
+            this.filterItems=this.activeItems
+        },
+        showAllItems(){
+            this.filterItems=this.getAllItem
         }
     },
 
@@ -80,7 +91,9 @@ export default {
         ...mapGetters([
             'getAllItem',
             'getSumItem',
-            'getCurrentItem'
+            'getCurrentItem',
+            'activeItems',
+            'completedItems'
         ])
     }
 };
@@ -121,7 +134,6 @@ li {
     top:24px;
     left:15px;
 }
-
 /*.head:after{
     content:'';
     display: inline-block;
@@ -249,11 +261,11 @@ li {
 }
 .itemOk{
     text-decoration: line-through;
-    opacity: .2;
+    opacity: .35;
 }
 .footer{
     height: 45px;
-    width:602px;
+    width:601px;
     background-color:white;
     position: relative;
     display:inline-flex;
