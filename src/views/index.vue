@@ -7,7 +7,7 @@
             <div class="head">
                 <span class="all" v-show="getSumItem" @click="changeStatus(getAllItem)"></span>
                 <input type="text" placeholder="What needs to be done?" class="new-things" @keyup.enter="addItemToList" v-model="message">
-                <div class="list" v-for="item in filterItems" v-show="getAllItem" @mouseenter="toggleShowBtn(item)" @mouseleave="toggleShowBtn(item)">
+                <div class="list" v-for="item in filterItems" v-show="getAllItem" @mouseenter="ShowDelBtn(item)" @mouseleave="HideDelBtn(item)">
                     <input type="text" class="item" :value="item.text" :class="[item.clicked?'itemOk':'']">
                     <span :class="[item.selected ? 'deleteBtn':'']" @click="delItem(getAllItem,item)"></span>
                     <span class="circleBtn" :class="[item.clicked?'greenBtn':'']"></span>
@@ -47,8 +47,11 @@ export default {
             this.message=''
             this.filterItems=this.getAllItem
         },
-        toggleShowBtn(item){
-            item.selected=!item.selected
+        ShowDelBtn(item){
+            item.selected=true
+        },
+        HideDelBtn(item){
+            item.selected=false
         },
         chooseItem(item){
             item.clicked=!item.clicked
@@ -70,6 +73,7 @@ export default {
                 this.$store.dispatch('toggleActiveItem',arr[i])
                 this.$store.dispatch('deleteItem',items)               
             }
+            
         },
         changeStatus(items){
             for(let i=0;i<items.length;i++){
