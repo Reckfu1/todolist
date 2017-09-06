@@ -66,6 +66,12 @@ const getters={
         return state.todolist.filter((todo) => {
             return todo.completed
         })
+    },
+    getCompletedItemsCount(state){
+        let arr=state.todolist.filter((todo) => {
+            return !todo.completed
+        })
+        return arr.length
     }
 }
 

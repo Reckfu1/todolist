@@ -14,7 +14,7 @@
                     <span class="completedBtn" :class="[item.clicked?'':'hide']" @click="chooseItem(item)"></span>
                 </div>
                 <div class="footer" v-show="getSumItem">
-                    <span>{{getSumItem}} items left</span>
+                    <span>{{getCompletedItemsCount}} items left</span>
                     <span class="line" @click="clearItem(getAllItem)">Clear completed</span>
                     <div class="toggle-list">
                         <div @click="showAllItems">All</div>
@@ -97,7 +97,8 @@ export default {
             'getSumItem',
             'getCurrentItem',
             'activeItems',
-            'completedItems'
+            'completedItems',
+            'getCompletedItemsCount'
         ])
     }
 };
