@@ -7,7 +7,7 @@
             <div class="head">
                 <span class="all" v-show="getSumItem" @click="changeStatus(getAllItem)"></span>
                 <input type="text" placeholder="What needs to be done?" class="new-things" @keyup.enter="addItemToList" v-model="message">
-                <div class="list" v-for="item in filterItems" v-show="getAllItem" @mouseenter="ShowDelBtn(item)" @mouseleave="HideDelBtn(item)">
+                <div class="list" v-for="item in filterItems" v-show="getSumItem" @mouseenter="ShowDelBtn(item)" @mouseleave="HideDelBtn(item)">
                     <input type="text" class="item" :value="item.text" :class="[item.clicked?'itemOk':'']">
                     <span :class="[item.selected ? 'deleteBtn':'']" @click="delItem(getAllItem,item)"></span>
                     <span class="circleBtn" :class="[item.clicked?'greenBtn':'']"></span>
@@ -37,7 +37,8 @@ export default {
     data() {
         return {
             message:'',
-            filterItems:[]
+            filterItems:[],
+            flag:false
         };
     },
 
@@ -60,6 +61,10 @@ export default {
         delItem(items,curitem){
             this.$store.dispatch('toggleActiveItem',curitem)
             this.$store.dispatch('deleteItem',items)
+            // 这里有个bug，勾选item，按下completed，再按下delete按钮，还是会出现item，一开始想的是明明都已经delete了，检查了一下state中的todolist数组里的item也是delete了，然而还是会显示item
+            // 原因是因为我这里过滤用的是filterItems，这个filterItems并不在state中，是在本组件的data里面的，虽然state中的todolist是真的delete掉了数据，但是组件的data里面的filterItems依然保存着数据，所以仍然会显示已经删除的数据
+            // 解决方法是重新更新一下filterItems就好了，吗的搞了半天，下面的clearItem也同理
+            this.filterItems=this.completedItems
         },
         clearItem(items){
             let arr=[],t=0
@@ -71,13 +76,22 @@ export default {
             
             for(let i=0;i<arr.length;i++){
                 this.$store.dispatch('toggleActiveItem',arr[i])
-                this.$store.dispatch('deleteItem',items)               
+                this.$store.dispatch('deleteItem',items)              
             }
             
+            this.filterItems=this.completedItems
         },
         changeStatus(items){
+            this.flag=!this.flag
             for(let i=0;i<items.length;i++){
-                items[i].clicked=!items[i].clicked
+                if(this.flag){
+                    items[i].clicked=true
+                    items[i].completed=true
+                }
+                else{
+                    items[i].clicked=false
+                    items[i].completed=false
+                }
             }
         },
         showCompletedItems(){
