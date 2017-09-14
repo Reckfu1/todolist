@@ -64,7 +64,7 @@ export default {
             this.$store.dispatch('deleteItem',items)
             // 这里有个bug，勾选item，按下completed，再按下delete按钮，还是会出现item，一开始想的是明明都已经delete了，检查了一下state中的todolist数组里的item也是delete了，然而还是会显示item
             // 原因是因为我这里过滤用的是filterItems，这个filterItems并不在state中，是在本组件的data里面的，虽然state中的todolist是真的delete掉了数据，但是组件的data里面的filterItems依然保存着数据，所以仍然会显示已经删除的数据
-            // 解决方法是重新更新一下filterItems就好了，吗的搞了半天，下面的clearItem也同理
+            // 解决方法是重新更新一下filterItems就好了，下面的clearItem也同理
             // this.filterItems=this.completedItems
             if(this.click) this.filterItems=this.completedItems
         },
@@ -81,7 +81,7 @@ export default {
                 this.$store.dispatch('deleteItem',items)              
             }
             
-            this.filterItems=this.completedItems
+            this.filterItems=this.getAllItem
         },
         changeStatus(items){
             this.flag=!this.flag
