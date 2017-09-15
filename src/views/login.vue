@@ -43,12 +43,23 @@
             }
         },
         methods: {
-            handleSubmit(name) {
+            login(name) {
                 this.$refs[name].validate((valid) => {
                     if (valid) {
-                        this.$Message.success('登录成功!')
-                        router.push({path:'/todolist'})
+                        let params={
+                            account:this.formInline.user,
+                            password:md5(this.formInline.password)
+                        }
+                        this.axios.post('/auth/login',params)
+                            .then(res => {
+                                if(res.data.success){
+                                    sessionStorage.setItem('token',res.data.token)
+                                    this.$Message.success('登录成功!')
+                                    router.push({path:'/todolist'})
+                                }
+                            })
                     } else {
+                        sessionStorage.setItem('token',null)
                         this.$Message.error('登录失败!')
                     }
                 })
@@ -62,10 +73,13 @@
                         }
                         this.axios.post('/auth/register',params)
                             .then(res => {
-                                if(res.data.success) console.log('register success!')
+                                if(res.data.success){
+                                    this.$Message.success('注册成功!')
+                                    this.formInline.user=''
+                                    this.formInline.password=''
+                                }
                                 else console.log('fail to register')
                             })
-                        this.$Message.success('注册成功!')
                     } else {
                         this.$Message.error('注册失败!')
                     }

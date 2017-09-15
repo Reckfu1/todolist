@@ -13,7 +13,7 @@ const getUserById=async function(id){
     // 因为JS的特性让它的IO操作是异步的,userInfo将是返回一个Promise对象，所以用async/await，使得我们可以用同步的写法(异步的逻辑)获取异步IO操作得到的数据
     const userInfo=await User.findOne({
         where:{
-            id:id
+            id
         }
     })
 
@@ -24,13 +24,25 @@ const insetUser=async function(name,password){
 
     const registerInfo=await User.create({
         user_name:name,
-        password:password
+        password
     })
 
     return true
 }
 
+const getUserByName=async function(name){
+
+    const userInfo=await User.findOne({
+        where:{
+            user_name:name
+        }
+    })
+
+    return userInfo
+}
+
 export default{
     getUserById,
-    insetUser
+    insetUser,
+    getUserByName
 }
