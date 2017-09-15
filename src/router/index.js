@@ -44,17 +44,26 @@ router.beforeEach((to,from,next) => {
     if(to.path=='/'){
         // 如果有token存在
         if(token!=null&&token!='null'){
-            next('/todolist')
+            console.log(token)
+            next({
+                path:'/todolist'
+            })
         }
         //否则直接跳转到首页
-        next()
+        else{
+            next()
+        }
     }   
     // 如果访问其他路由
     else{
         if(token!=null&&token!='null'){
             next()
         }
-        next('/')
+        else{
+            next({
+                path:'/'
+            })
+        }
     }
 })
 
