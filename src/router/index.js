@@ -36,4 +36,26 @@ const router=new Router({
     routes
 })
 
+// 用户成功登陆后跳转到todolist页面，但是有个bug，如果直接填入todolist页面的url一样可以访问todolist
+// 所以，在路由这里做一下验证
+router.beforeEach((to,from,next) => {
+    const token=sessionStorage.getItem('token')
+    //若是访问登陆页面
+    if(to.path=='/'){
+        // 如果有token存在
+        if(token!=null&&token!='null'){
+            next('/todolist')
+        }
+        //否则直接跳转到首页
+        next()
+    }   
+    // 如果访问其他路由
+    else{
+        if(token!=null&&token!='null'){
+            next()
+        }
+        next('/')
+    }
+})
+
 export default router

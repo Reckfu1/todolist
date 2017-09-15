@@ -20,6 +20,8 @@ const registerAccount=async function(ctx){
 
 const loginAccount=async function(ctx){
     const {account,password}=ctx.request.body
+    // 注意这里要用const而不是用let，如果用let会报错读不到getUserByName
+    // 因为在变量x的声明语句还没有执行完成前，就去取x的值，导致报错”x 未定义“
     const result=await user.getUserByName(account)
 
     // 如果用户存在
