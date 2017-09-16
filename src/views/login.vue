@@ -53,13 +53,13 @@
                         this.axios.post('/auth/login',params)
                             .then(res => {
                                 if(res.data.success){
-                                    sessionStorage.setItem('token',res.data.token)
+                                    localStorage.setItem('token',res.data.token)
                                     this.$Message.success('登录成功!')
                                     router.push({path:'/todolist'})
                                 }
                             })
                     } else {
-                        sessionStorage.setItem('token',null)
+                        localStorage.setItem('token',null)
                         this.$Message.error('登录失败!')
                     }
                 })

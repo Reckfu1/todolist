@@ -3,6 +3,7 @@ import Router from 'vue-router'
 // import Hello from '@/components/Hello'
 import Index from '../views/index'
 import Login from '../views/login'
+import axios from 'axios'
 
 Vue.use(Router)
 
@@ -37,16 +38,25 @@ const router=new Router({
 })
 
 // 用户成功登陆后跳转到todolist页面，但是有个bug，如果直接填入todolist页面的url一样可以访问todolist
-// 所以，在路由这里做一下验证
+// 同时，为了防止伪造token，所以在路由这里做一下token的验证，即可解决以上两种问题
 router.beforeEach((to,from,next) => {
-    const token=sessionStorage.getItem('token')
+    const token=localStorage.getItem('token')
     //若是访问登陆页面
     if(to.path=='/'){
         // 如果有token存在
         if(token!=null&&token!='null'){
-            console.log(token)
-            next({
-                path:'/todolist'
+            axios.post('/auth/verify',{
+                token
+            })
+            .then(res => {
+                if(res.data.verify){
+                    next({
+                        path:'/todolist'
+                    })
+                }
+                else{
+                    next()
+                }
             })
         }
         //否则直接跳转到首页
@@ -57,7 +67,17 @@ router.beforeEach((to,from,next) => {
     // 如果访问其他路由
     else{
         if(token!=null&&token!='null'){
-            next()
+            axios.post('/auth/verify',{ token })
+                .then(res => {
+                    if(res.data.verify){
+                        next()
+                    }
+                    else{
+                        next({
+                            path:'/'
+                        })
+                    }
+                })
         }
         else{
             next({

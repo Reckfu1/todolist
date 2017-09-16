@@ -20,8 +20,6 @@ const registerAccount=async function(ctx){
 
 const loginAccount=async function(ctx){
     const {account,password}=ctx.request.body
-    // 注意这里要用const而不是用let，如果用let会报错读不到getUserByName
-    // 因为在变量x的声明语句还没有执行完成前，就去取x的值，导致报错”x 未定义“
     const result=await user.getUserByName(account)
 
     // 如果用户存在
@@ -37,7 +35,8 @@ const loginAccount=async function(ctx){
         else{
             let userToken={
                 name:result.user_name,
-                id:result.id
+                password:result.password,
+                exp: Math.floor(Date.now() / 1000) + (60 * 60) //Signing a token with 1 hour of expiration
             }
             const secret='todolist'
             const token=jwt.sign(userToken,secret)
@@ -55,8 +54,46 @@ const loginAccount=async function(ctx){
     }
 }
 
+const verifyAccount=async function(ctx){
+    const {token}=ctx.request.body
+    let verifyInfo={}
+
+    // 先验证下token，如果有错误，直接返回false，如果正确则进行下一步验证
+    jwt.verify(token,'todolist',(err,decoded) => {
+        if(err){
+            ctx.body={
+                verify:false
+            }
+        }
+        else{
+            verifyInfo=decoded
+        }
+    })
+
+    const result=await user.getUserByName(verifyInfo.name)
+    if(result!=null){
+        if(result.password==verifyInfo.password){
+            ctx.body={
+                verify:true
+            }
+        }
+        else{
+            ctx.body={
+                verify:false
+            }
+        }
+    }
+    else{
+        ctx.body={
+            verify:false
+        }
+    }
+
+}
+
 export default{
     getUserInfo,
     registerAccount,
-    loginAccount
+    loginAccount,
+    verifyAccount
 }
