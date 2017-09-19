@@ -1,6 +1,6 @@
 # Todolist
 
-> Todolist, 基于Vue+Koa2+MySql, 使用了Vuex和localStorage处理数据, MySql仅保存用户信息
+> 基于Vue+Koa2+MySql, 使用了Vuex和localStorage处理数据, MySql仅保存用户信息
 
 仅作为练习
 
