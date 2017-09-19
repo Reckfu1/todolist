@@ -37,38 +37,26 @@ const mutations={
         else state.todolist=[]
     },
     [types.SELECT_ITEM](state){
-        for(let i=0;i<state.todolist.length;i++){
-            if(state.todolist[i].id==state.activeitem.id){
-                state.todolist[i].selected=true
-                break
-            }
+        if(findCurrentItem(state)){
+            findCurrentItem(state).selected=true
         }
         window.localStorage.setItem('todolist',JSON.stringify(state.todolist))
     },
     [types.DESELECT_ITEM](state){
-        for(let i=0;i<state.todolist.length;i++){
-            if(state.todolist[i].id==state.activeitem.id){
-                state.todolist[i].selected=false
-                break
-            }
+        if(findCurrentItem(state)){
+            findCurrentItem(state).selected=false
         }
         window.localStorage.setItem('todolist',JSON.stringify(state.todolist))
     },
     [types.TOGGLE_CHOOSE_ITEM](state){
-        for(let i=0;i<state.todolist.length;i++){
-            if(state.todolist[i].id==state.activeitem.id){
-                state.todolist[i].clicked=!state.todolist[i].clicked
-                break
-            }
+        if(findCurrentItem(state)){
+            findCurrentItem(state).clicked=!findCurrentItem(state).clicked
         }
         window.localStorage.setItem('todolist',JSON.stringify(state.todolist))
     },
     [types.TOGGLE_ITEM_STATUS](state){
-        for(let i=0;i<state.todolist.length;i++){
-            if(state.todolist[i].id==state.activeitem.id){
-                state.todolist[i].completed=!state.todolist[i].completed
-                break
-            }
+        if(findCurrentItem(state)){
+            findCurrentItem(state).completed=!findCurrentItem(state).completed
         }
         window.localStorage.setItem('todolist',JSON.stringify(state.todolist))
     },
@@ -137,6 +125,15 @@ const getters={
         })
         return arr.length
     }
+}
+
+function findCurrentItem(state){
+    for(let i=0;i<state.todolist.length;i++){
+        if(state.todolist[i].id==state.activeitem.id){
+            return state.todolist[i]
+        }
+    }
+    return false
 }
 
 export default{

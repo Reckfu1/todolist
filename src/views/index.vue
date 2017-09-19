@@ -89,16 +89,6 @@ export default {
         changeStatus(){
             this.flag=!this.flag
             this.$store.dispatch('toggleAllStatus',this.flag)
-            // for(let i=0;i<items.length;i++){
-            //     if(this.flag){
-            //         items[i].clicked=true
-            //         items[i].completed=true
-            //     }
-            //     else{
-            //         items[i].clicked=false
-            //         items[i].completed=false
-            //     }
-            // }
         },
         showCompletedItems(){
             // this.filterItems=this.completedItems
