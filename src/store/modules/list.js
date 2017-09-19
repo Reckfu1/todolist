@@ -16,6 +16,7 @@ const mutations={
             clicked:false
         }
         state.todolist.push(data)
+        window.localStorage.setItem('todolist',JSON.stringify(state.todolist))
     },
     [types.DELETE_ITEM](state,allitems){
         for(let i=0;i<allitems.length;i++){
@@ -24,18 +25,66 @@ const mutations={
                 break
             }
         }
+        window.localStorage.setItem('todolist',JSON.stringify(state.todolist))
     },
     [types.ACTIVE_ITEM](state,item){
         state.activeitem=item
+    },
+    [types.INIT_DATA](state){
+        if(window.localStorage.getItem('todolist')){
+            state.todolist=JSON.parse(window.localStorage.getItem('todolist'))
+        }
+        else state.todolist=[]
+    },
+    [types.SELECT_ITEM](state){
+        for(let i=0;i<state.todolist.length;i++){
+            if(state.todolist[i].id==state.activeitem.id){
+                state.todolist[i].selected=true
+                break
+            }
+        }
+        window.localStorage.setItem('todolist',JSON.stringify(state.todolist))
+    },
+    [types.DESELECT_ITEM](state){
+        for(let i=0;i<state.todolist.length;i++){
+            if(state.todolist[i].id==state.activeitem.id){
+                state.todolist[i].selected=false
+                break
+            }
+        }
+        window.localStorage.setItem('todolist',JSON.stringify(state.todolist))
+    },
+    [types.TOGGLE_CHOOSE_ITEM](state){
+        for(let i=0;i<state.todolist.length;i++){
+            if(state.todolist[i].id==state.activeitem.id){
+                state.todolist[i].clicked=!state.todolist[i].clicked
+                break
+            }
+        }
+        window.localStorage.setItem('todolist',JSON.stringify(state.todolist))
+    },
+    [types.TOGGLE_ITEM_STATUS](state){
+        for(let i=0;i<state.todolist.length;i++){
+            if(state.todolist[i].id==state.activeitem.id){
+                state.todolist[i].completed=!state.todolist[i].completed
+                break
+            }
+        }
+        window.localStorage.setItem('todolist',JSON.stringify(state.todolist))
+    },
+    [types.TOGGLE_ALL_STATUS](state,flag){
+        for(let i=0;i<state.todolist.length;i++){
+            if(flag){
+                state.todolist[i].clicked=true
+                state.todolist[i].completed=true
+            }
+            else{
+                state.todolist[i].clicked=false
+                state.todolist[i].completed=false   
+            }
+        }
+        window.localStorage.setItem('todolist',JSON.stringify(state.todolist))
     }
-    // [types.TOGGLE_SELETED_STATUS](state,item){
-    //     for(let i=0;i<state.todolist.length;i++){
-    //         if(item.id==state.todolist[i].id){
-    //             state.todolist[i].selected=!state.todolist[i].selected
-    //             break
-    //         }
-    //     }
-    // }
 }
 
 const actions={
@@ -47,10 +96,25 @@ const actions={
     },
     toggleActiveItem({commit},item){
         commit(types.ACTIVE_ITEM,item)
+    },
+    initData({commit}){
+        commit(types.INIT_DATA)
+    },
+    selectItem({commit}){
+        commit(types.SELECT_ITEM)
+    },
+    deselectItem({commit}){
+        commit(types.DESELECT_ITEM)
+    },
+    toggleChooseItem({commit}){
+        commit(types.TOGGLE_CHOOSE_ITEM)
+    },
+    toggleItemStatus({commit}){
+        commit(types.TOGGLE_ITEM_STATUS)
+    },
+    toggleAllStatus({commit},flag){
+        commit(types.TOGGLE_ALL_STATUS,flag)
     }
-    // toggleSeletedStatus({commit},item){
-    //     commit(types.TOGGLE_SELETED_STATUS,item)
-    // }
 }
 
 const getters={

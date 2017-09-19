@@ -37,9 +37,10 @@ export default {
     data() {
         return {
             message:'',
-            filterItems:[],
+            // filterItems:[],
             flag:false,
-            click:false
+            // click:false,
+            choice:0
         };
     },
 
@@ -47,17 +48,20 @@ export default {
         addItemToList(){
             if(this.message) this.$store.dispatch('addItem',this.message)
             this.message=''
-            this.filterItems=this.getAllItem
+            // this.filterItems=this.getAllItem
         },
         ShowDelBtn(item){
-            item.selected=true
+            this.$store.dispatch('toggleActiveItem',item)
+            this.$store.dispatch('selectItem')
         },
         HideDelBtn(item){
-            item.selected=false
+            this.$store.dispatch('toggleActiveItem',item)
+            this.$store.dispatch('deselectItem')
         },
         chooseItem(item){
-            item.clicked=!item.clicked
-            item.completed=!item.completed
+            this.$store.dispatch('toggleActiveItem',item)
+            this.$store.dispatch('toggleChooseItem')
+            this.$store.dispatch('toggleItemStatus')
         },
         delItem(items,curitem){
             this.$store.dispatch('toggleActiveItem',curitem)
@@ -65,8 +69,7 @@ export default {
             // 这里有个bug，勾选item，按下completed，再按下delete按钮，还是会出现item，一开始想的是明明都已经delete了，检查了一下state中的todolist数组里的item也是delete了，然而还是会显示item
             // 原因是因为我这里过滤用的是filterItems，这个filterItems并不在state中，是在本组件的data里面的，虽然state中的todolist是真的delete掉了数据，但是组件的data里面的filterItems依然保存着数据，所以仍然会显示已经删除的数据
             // 解决方法是重新更新一下filterItems就好了，下面的clearItem也同理
-            // this.filterItems=this.completedItems
-            if(this.click) this.filterItems=this.completedItems
+            // if(this.click) this.filterItems=this.completedItems
         },
         clearItem(items){
             let arr=[],t=0
@@ -81,32 +84,36 @@ export default {
                 this.$store.dispatch('deleteItem',items)              
             }
             
-            this.filterItems=this.getAllItem
+            // this.filterItems=this.getAllItem
         },
-        changeStatus(items){
+        changeStatus(){
             this.flag=!this.flag
-            for(let i=0;i<items.length;i++){
-                if(this.flag){
-                    items[i].clicked=true
-                    items[i].completed=true
-                }
-                else{
-                    items[i].clicked=false
-                    items[i].completed=false
-                }
-            }
+            this.$store.dispatch('toggleAllStatus',this.flag)
+            // for(let i=0;i<items.length;i++){
+            //     if(this.flag){
+            //         items[i].clicked=true
+            //         items[i].completed=true
+            //     }
+            //     else{
+            //         items[i].clicked=false
+            //         items[i].completed=false
+            //     }
+            // }
         },
         showCompletedItems(){
-            this.filterItems=this.completedItems
-            this.click=true
+            // this.filterItems=this.completedItems
+            // this.click=true
+            this.choice=2
         },
         showActiveItems(){
-            this.filterItems=this.activeItems
-            this.click=false
+            // this.filterItems=this.activeItems
+            // this.click=false
+            this.choice=1
         },
         showAllItems(){
-            this.filterItems=this.getAllItem
-            this.click=false
+            // this.filterItems=this.getAllItem
+            // this.click=false
+            this.choice=0
         }
     },
 
@@ -118,9 +125,17 @@ export default {
             'activeItems',
             'completedItems',
             'getCompletedItemsCount'
-        ])
+        ]),
+        filterItems(){
+            let sourceData=[this.getAllItem,this.activeItems,this.completedItems]
+            return sourceData[this.choice]
+        }
+    },
+
+    created(){
+        this.$store.dispatch('initData')
     }
-};
+}
 </script>
 <style lang="css" scoped>
 li {
